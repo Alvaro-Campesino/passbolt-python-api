@@ -2,6 +2,7 @@ import requests
 import configparser
 import gnupg
 import urllib.parse
+import yaml
 
 LOGIN_URL = "/auth/login.json"
 VERIFY_URL = "/auth/verify.json"
@@ -39,6 +40,26 @@ class PassboltAPI:
             raise Exception("GPG private key could not be found. Check: gpg --list-secret-keys")
         self._login()
 
+    def urls_vars(self, resource_id='', user_id='', group_id='' ):
+        """This is a dictionary object containing the endpoints from the swagger
+        it makes easier to update them if there are changes in the """
+        { 'resources' : '/resources.json',
+          'single_resource' : '/resources/{}.json?api-version=v2'.format(resource_id),
+          'users' : '/users.json?api-version=v2',
+          'single_user' : '/users/{}.json?api-version=v2'.format(user_id),
+          'check_user_modifiable' : '/users/{}/dry-run?api-version=v2'.format(user_id),
+          'groups'  : '/groups.json?api-version=v2',
+          'single_group' : '/groups/{}.json?api-version=v2'.format(group_id),
+          'check_group_modifiable' : '/groups/{}/dry-run?api-version=v2'.format(group_id),
+          'sharable_users_and_groups' : '/share/search-aros.json?api-version=v2'
+          'password_share'
+
+
+
+          }
+        with open('swagger.yaml', 'r')
+
+
     def __enter__(self):
         return self
 
@@ -54,8 +75,8 @@ class PassboltAPI:
             self.gpg.delete_keys(i["fingerprint"], False)
 
     def _import_gpg_keys(self):
-        if not self.config["PASSBOLT"]["USER_PUBLIC_KEY_FILE"]:
-            raise ValueError("Missing value for USER_PUBLIC_KEY_FILE in config.ini")
+        #if not self.config["PASSBOLT"]["USER_PUBLIC_KEY_FILE"]:
+        #    raise ValueError("Missing value for USER_PUBLIC_KEY_FILE in config.ini")
         if not self.config["PASSBOLT"]["USER_PRIVATE_KEY_FILE"]:
             raise ValueError("Missing value for USER_PRIVATE_KEY_FILE in config.ini")
         self.gpg.import_keys(open(self.config["PASSBOLT"]["USER_PUBLIC_KEY_FILE"], "r").read())
@@ -111,6 +132,9 @@ class PassboltAPI:
 
     def close_session(self):
         self.requests_session.close()
+
+    def get_all_keys_resources(self):
+        r = self.get(self, )
 
 
 
